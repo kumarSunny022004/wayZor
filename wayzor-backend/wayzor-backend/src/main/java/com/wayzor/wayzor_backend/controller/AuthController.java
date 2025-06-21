@@ -20,6 +20,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
+        System.out.println("Register API called for: " + request.getEmail());
         return new ResponseEntity<>(authService.register(request), HttpStatus.CREATED);
     }
 }
