@@ -2,6 +2,7 @@ package com.wayzor.wayzor_backend.controller;
 
 
 import com.wayzor.wayzor_backend.dto.AuthResponse;
+import com.wayzor.wayzor_backend.dto.LoginRequest;
 import com.wayzor.wayzor_backend.dto.RegisterRequest;
 import com.wayzor.wayzor_backend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,14 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
         System.out.println("Register API called for: " + request.getEmail());
         return new ResponseEntity<>(authService.register(request), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request){
+        AuthResponse authResponse = authService.login(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(authResponse);
+
     }
 }

@@ -2,11 +2,15 @@ package com.wayzor.wayzor_backend.service;
 
 
 import com.wayzor.wayzor_backend.dto.AuthResponse;
+import com.wayzor.wayzor_backend.dto.LoginRequest;
 import com.wayzor.wayzor_backend.dto.RegisterRequest;
 import com.wayzor.wayzor_backend.entity.User;
 import com.wayzor.wayzor_backend.repository.UserRepository;
 import com.wayzor.wayzor_backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
 
     private final UserRepository userRepository;
@@ -31,6 +36,24 @@ public class AuthenticationService {
         userRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getEmail());
+
+        return new AuthResponse(token);
+    }
+
+
+    public AuthResponse login(LoginRequest request) {
+        User user  = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(()->{
+                    log.warn("Login failed: User not found {}",request.getEmail());
+                    return new UsernameNotFoundException("Username not found with the given email: "+request.getEmail());
+                });
+        if(!passwordEncoder.matches(user.getPassword(),request.getPassword())){
+            log.warn("Login failed - invalid credentials for user: {}", request.getEmail());
+            throw new BadCredentialsException("Invalid email or password");
+        }
+
+        String token = jwtUtil.generateToken(request.getEmail());
+        log.info("Login successful for email: {}", request.getEmail());
 
         return new AuthResponse(token);
     }
