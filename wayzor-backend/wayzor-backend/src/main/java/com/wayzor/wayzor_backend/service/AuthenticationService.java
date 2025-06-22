@@ -26,6 +26,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     public AuthResponse register(RegisterRequest request){
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("User already registered with this email");
+        }
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -47,7 +50,7 @@ public class AuthenticationService {
                     log.warn("Login failed: User not found {}",request.getEmail());
                     return new UsernameNotFoundException("Username not found with the given email: "+request.getEmail());
                 });
-        if(!passwordEncoder.matches(user.getPassword(),request.getPassword())){
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             log.warn("Login failed - invalid credentials for user: {}", request.getEmail());
             throw new BadCredentialsException("Invalid email or password");
         }
