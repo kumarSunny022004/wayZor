@@ -5,9 +5,12 @@ import com.wayzor.wayzor_backend.dto.AuthResponse;
 import com.wayzor.wayzor_backend.dto.LoginRequest;
 import com.wayzor.wayzor_backend.dto.RegisterRequest;
 import com.wayzor.wayzor_backend.entity.User;
+import com.wayzor.wayzor_backend.enums.Role;
 import com.wayzor.wayzor_backend.exception.CustomException;
 import com.wayzor.wayzor_backend.repository.UserRepository;
 import com.wayzor.wayzor_backend.security.JwtUtil;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,6 +29,9 @@ public class AuthenticationService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     public AuthResponse register(RegisterRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("User already registered with this email");
@@ -34,7 +40,7 @@ public class AuthenticationService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("USER")
+                .role(String.valueOf(Role.USER))
                 .build();
 
         userRepository.save(user);

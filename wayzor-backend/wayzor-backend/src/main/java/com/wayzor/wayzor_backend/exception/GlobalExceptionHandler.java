@@ -32,4 +32,14 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Map<String,Object>> handleApiException(ApiException ex){
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", LocalDateTime.now());
+        error.put("error", ex.getMessage());
+        error.put("status", HttpStatus.SERVICE_UNAVAILABLE.value());
+
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }
