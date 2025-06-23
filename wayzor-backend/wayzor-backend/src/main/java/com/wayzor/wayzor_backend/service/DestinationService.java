@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wayzor.wayzor_backend.config.GoogleConfig;
 import com.wayzor.wayzor_backend.config.RestTemplateConfig;
 import com.wayzor.wayzor_backend.dto.DestinationSearchResponse;
+import com.wayzor.wayzor_backend.dto.HotelResponse;
 import com.wayzor.wayzor_backend.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,4 +74,50 @@ public class DestinationService {
             throw new ApiException("Unable to fetch destinations. Please try again later.");
         }
     }
+
+    public List<HotelResponse> getNearbyHotels(double lat, double lng) {
+        try {
+            String url = UriComponentsBuilder
+                    .fromHttpUrl("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
+                    .queryParam("location", lat + "," + lng)
+                    .queryParam("radius", "2000")
+                    .queryParam("type", "lodging")
+                    .queryParam("key", googleConfig.googleApiKey)
+                    .toUriString();
+
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode results = root.path("results");
+
+            List<HotelResponse> hotels = new ArrayList<>();
+
+            for (JsonNode result : results) {
+                String name = result.path("name").asText();
+                String address = result.path("vicinity").asText();
+                double rating = result.path("rating").asDouble(0.0);
+
+                String thumbnailUrl = null;
+                JsonNode photos = result.path("photos");
+                if (photos.isArray() && !photos.isEmpty()) {
+                    String photoRef = photos.get(0).path("photo_reference").asText();
+                    thumbnailUrl = UriComponentsBuilder
+                            .fromHttpUrl("https://maps.googleapis.com/maps/api/place/photo")
+                            .queryParam("maxwidth", "400")
+                            .queryParam("photoreference", photoRef)
+                            .queryParam("key", googleConfig.googleApiKey)
+                            .toUriString();
+                }
+
+                hotels.add(new HotelResponse(name, address, rating, thumbnailUrl));
+            }
+
+            return hotels;
+
+        } catch (Exception e) {
+            log.error("Failed to fetch nearby hotels for location: {}, {}", lat, lng, e);
+            throw new ApiException("Unable to fetch nearby hotels. Please try again later.");
+        }
+    }
+
 }

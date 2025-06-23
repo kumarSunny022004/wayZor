@@ -8,10 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DestinationSearchResponse {
+public class HotelResponse {
     private String name;
     private String address;
-    private double latitude;
-    private double longitude;
+    private double rating;
     private String thumbnailurl;
 }
