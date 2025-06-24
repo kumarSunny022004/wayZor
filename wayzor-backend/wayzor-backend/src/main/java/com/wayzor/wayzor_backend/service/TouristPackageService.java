@@ -1,0 +1,49 @@
+package com.wayzor.wayzor_backend.service;
+
+import com.wayzor.wayzor_backend.dto.CreatePackageRequest;
+import com.wayzor.wayzor_backend.dto.PackageResponse;
+import com.wayzor.wayzor_backend.entity.TouristPackage;
+import com.wayzor.wayzor_backend.entity.User;
+import com.wayzor.wayzor_backend.exception.ApiException;
+import com.wayzor.wayzor_backend.repository.TouristPackageRepository;
+import com.wayzor.wayzor_backend.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class TouristPackageService {
+
+    private final TouristPackageRepository packageRepository;
+    private final UserRepository userRepository;
+
+    public PackageResponse createPackage(CreatePackageRequest request, UserDetails userDetails) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User host = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException("Host user not found"));
+
+        if (!host.getRole().equals("HOST")) {
+            throw new ApiException("Only users with HOST role can create packages");
+        }
+
+        TouristPackage touristPackage = TouristPackage.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .city(request.getCity())
+                .price(request.getPrice())
+                .days(request.getDays())
+                .nights(request.getNights())
+                .hotelName(request.getHotelName())
+                .host(host)
+                .build();
+
+        TouristPackage saved = packageRepository.save(touristPackage);
+
+        return new PackageResponse(saved.getId(), saved.getTitle(), saved.getCity(), saved.getPrice());
+    }
+}

@@ -1,5 +1,7 @@
-package com.wayzor.wayzor_backend.security;
+package com.wayzor.wayzor_backend.config;
 
+import com.wayzor.wayzor_backend.security.CustomUserDetailsService;
+import com.wayzor.wayzor_backend.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -2,7 +2,7 @@
 package com.wayzor.wayzor_backend.config;
 
 //import com.wayzor.security.JwtAuthFilter;
-import com.wayzor.wayzor_backend.security.JwtAuthFilter;
+import com.wayzor.wayzor_backend.config.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/packages/**").hasAuthority("HOST")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
