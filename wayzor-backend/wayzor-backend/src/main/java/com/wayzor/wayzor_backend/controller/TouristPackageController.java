@@ -8,10 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -20,12 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class TouristPackageController {
     private final TouristPackageService touristPackageService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<PackageResponse> createPackage(
             @RequestBody CreatePackageRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         PackageResponse response = touristPackageService.createPackage(request, userDetails);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<PackageResponse>> getMyPackages(@AuthenticationPrincipal UserDetails userDetails) {
+        List<PackageResponse> packages = touristPackageService.getPackagesByHost(userDetails);
+        return ResponseEntity.ok(packages);
     }
 }

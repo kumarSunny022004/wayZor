@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -45,5 +47,28 @@ public class TouristPackageService {
         TouristPackage saved = packageRepository.save(touristPackage);
 
         return new PackageResponse(saved.getId(), saved.getTitle(), saved.getCity(), saved.getPrice());
+    }
+
+
+    public List<PackageResponse> getPackagesByHost(UserDetails userDetails) {
+        String email = userDetails.getUsername();
+
+        User host = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException("Host not found"));
+
+        if (!host.getRole().equalsIgnoreCase("HOST")) {
+            throw new ApiException("Only hosts can view their packages");
+        }
+
+        List<TouristPackage> packages = packageRepository.findByHostId(host.getId());
+
+        return packages.stream()
+                .map(pkg -> new PackageResponse(
+                        pkg.getId(),
+                        pkg.getTitle(),
+                        pkg.getCity(),
+                        pkg.getPrice()
+                ))
+                .toList();
     }
 }
