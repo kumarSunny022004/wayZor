@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -107,7 +108,6 @@ public class TouristPackageService {
 
 
 
-    // TouristPackageService.java
 
     public void deletePackage(Long id, UserDetails userDetails) {
         String email = userDetails.getUsername();
@@ -124,5 +124,20 @@ public class TouristPackageService {
 
         packageRepository.delete(touristPackage);
     }
+
+
+//    see packages related to your city
+public List<PackageResponse> getPackagesByCity(String city) {
+    List<TouristPackage> packages = packageRepository.findByCityContainingIgnoreCase(city);
+
+    return packages.stream()
+            .map(pkg -> new PackageResponse(
+                    pkg.getId(),
+                    pkg.getTitle(),
+                    pkg.getCity(),
+                    pkg.getPrice()
+            ))
+            .collect(Collectors.toList());
+}
 
 }

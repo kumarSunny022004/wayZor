@@ -54,4 +54,11 @@ public class TouristPackageController {
         touristPackageService.deletePackage(id, userDetails);
         return ResponseEntity.ok("Package deleted successfully");
     }
+
+
+    @GetMapping("/city")
+    public ResponseEntity<List<PackageResponse>> getPackagesByCity(@RequestParam("name") String cityName) {
+        List<PackageResponse> responses = touristPackageService.getPackagesByCity(cityName);
+        return ResponseEntity.ok(responses);
+    }
 }
