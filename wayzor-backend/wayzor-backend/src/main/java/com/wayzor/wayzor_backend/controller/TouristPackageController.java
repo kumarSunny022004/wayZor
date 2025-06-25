@@ -44,4 +44,14 @@ public class TouristPackageController {
         PackageResponse updated = touristPackageService.updatePackage(id, request, userDetails);
         return ResponseEntity.ok(updated);
     }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePackage(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        touristPackageService.deletePackage(id, userDetails);
+        return ResponseEntity.ok("Package deleted successfully");
+    }
 }

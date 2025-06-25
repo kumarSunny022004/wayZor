@@ -103,4 +103,26 @@ public class TouristPackageService {
 
         return new PackageResponse(updated.getId(), updated.getTitle(), updated.getCity(), updated.getPrice());
     }
+
+
+
+
+    // TouristPackageService.java
+
+    public void deletePackage(Long id, UserDetails userDetails) {
+        String email = userDetails.getUsername();
+
+        User host = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException("Host not found"));
+
+        TouristPackage touristPackage = packageRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Package not found"));
+
+        if (!Long.valueOf(touristPackage.getHost().getId()).equals(host.getId())) {
+            throw new ApiException("You are not authorized to delete this package");
+        }
+
+        packageRepository.delete(touristPackage);
+    }
+
 }
