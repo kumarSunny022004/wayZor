@@ -34,4 +34,14 @@ public class TouristPackageController {
         List<PackageResponse> packages = touristPackageService.getPackagesByHost(userDetails);
         return ResponseEntity.ok(packages);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PackageResponse> updatePackage(
+            @PathVariable Long id,
+            @RequestBody CreatePackageRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        PackageResponse updated = touristPackageService.updatePackage(id, request, userDetails);
+        return ResponseEntity.ok(updated);
+    }
 }

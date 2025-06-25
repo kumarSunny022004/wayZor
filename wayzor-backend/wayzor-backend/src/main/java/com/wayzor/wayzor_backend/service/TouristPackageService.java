@@ -71,4 +71,36 @@ public class TouristPackageService {
                 ))
                 .toList();
     }
+
+
+
+
+
+    public PackageResponse updatePackage(Long id, CreatePackageRequest request, UserDetails userDetails) {
+        String email = userDetails.getUsername();
+
+        User host = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException("Host not found"));
+
+        TouristPackage touristPackage = packageRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Package not found"));
+
+        // Ensure only the creator can update
+        if (!Long.valueOf(touristPackage.getHost().getId()).equals(host.getId())) {
+            throw new ApiException("You are not authorized to update this package");
+        }
+
+        // Update fields
+        touristPackage.setTitle(request.getTitle());
+        touristPackage.setDescription(request.getDescription());
+        touristPackage.setCity(request.getCity());
+        touristPackage.setPrice(request.getPrice());
+        touristPackage.setDays(request.getDays());
+        touristPackage.setNights(request.getNights());
+        touristPackage.setHotelName(request.getHotelName());
+
+        TouristPackage updated = packageRepository.save(touristPackage);
+
+        return new PackageResponse(updated.getId(), updated.getTitle(), updated.getCity(), updated.getPrice());
+    }
 }
