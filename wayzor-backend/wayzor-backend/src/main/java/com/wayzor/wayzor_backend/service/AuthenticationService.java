@@ -36,6 +36,12 @@ public class AuthenticationService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("User already registered with this email");
         }
+
+        Role role = request.getRole();
+        if (role != Role.USER && role != Role.HOST) {
+            throw new RuntimeException("Invalid role. Only USER or HOST registration allowed.");
+        }
+
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
