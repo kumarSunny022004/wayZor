@@ -4,6 +4,7 @@ import com.wayzor.wayzor_backend.dto.PackageResponse;
 import com.wayzor.wayzor_backend.dto.UserSummaryDto;
 import com.wayzor.wayzor_backend.entity.TouristPackage;
 import com.wayzor.wayzor_backend.entity.User;
+import com.wayzor.wayzor_backend.exception.ApiException;
 import com.wayzor.wayzor_backend.repository.TouristPackageRepository;
 import com.wayzor.wayzor_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,13 @@ public class AdminService {
                         p.getPrice()
                 ))
                 .toList();
+    }
+
+    public void deletePackage(Long id) {
+        TouristPackage touristPackage = touristPackageRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Package not found"));
+
+        touristPackageRepository.delete(touristPackage);
     }
 
 }

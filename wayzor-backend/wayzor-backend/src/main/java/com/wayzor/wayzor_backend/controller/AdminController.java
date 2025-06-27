@@ -31,5 +31,10 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllPackages());
     }
 
+    @DeleteMapping("/packages/{id}")
+    public ResponseEntity<Void> deletePackage(@PathVariable Long id) {
+        adminService.deletePackage(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }
