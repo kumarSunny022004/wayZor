@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface TouristPackageRepository extends JpaRepository<TouristPackage,Long> {
     List<TouristPackage> findByCityContainingIgnoreCase(String city);
-
     List<TouristPackage> findByHostId(Long hostId);
+    List<TouristPackage> findAll();
 }

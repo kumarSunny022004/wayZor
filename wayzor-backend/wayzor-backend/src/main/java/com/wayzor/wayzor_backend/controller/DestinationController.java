@@ -28,6 +28,7 @@ public class DestinationController {
     }
 
     // ✅ Get nearby hotels for selected destination
+//    http://localhost:8080/api/destinations/nearby-hotels?lat=31.096504&lng=77.2683186
     @GetMapping("/nearby-hotels")
     public ResponseEntity<List<HotelResponse>> getNearbyHotels(
             @RequestParam double lat,

@@ -57,6 +57,7 @@ public class TouristPackageController {
 
 
     @GetMapping("/city")
+//    http://localhost:8080/api/packages/city?name=Shimla
     public ResponseEntity<List<PackageResponse>> getPackagesByCity(@RequestParam("name") String cityName) {
         List<PackageResponse> responses = touristPackageService.getPackagesByCity(cityName);
         return ResponseEntity.ok(responses);

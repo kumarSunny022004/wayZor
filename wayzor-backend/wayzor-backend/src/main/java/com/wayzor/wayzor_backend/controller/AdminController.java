@@ -1,5 +1,6 @@
 package com.wayzor.wayzor_backend.controller;
 
+import com.wayzor.wayzor_backend.dto.PackageResponse;
 import com.wayzor.wayzor_backend.dto.UserSummaryDto;
 import com.wayzor.wayzor_backend.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,11 @@ public class AdminController {
     public ResponseEntity<List<UserSummaryDto>> getAllHosts() {
         return ResponseEntity.ok(adminService.getAllHosts());
     }
+
+    @GetMapping("/packages")
+    public ResponseEntity<List<PackageResponse>> getAllPackages() {
+        return ResponseEntity.ok(adminService.getAllPackages());
+    }
+
 
 }
