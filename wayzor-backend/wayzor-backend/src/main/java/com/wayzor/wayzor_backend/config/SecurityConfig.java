@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/packages/city").permitAll()
+                        .requestMatchers("/api/favorites/**").authenticated()
                         .requestMatchers("/api/packages/**").hasAuthority("HOST")
                         .anyRequest().authenticated()
                 )
