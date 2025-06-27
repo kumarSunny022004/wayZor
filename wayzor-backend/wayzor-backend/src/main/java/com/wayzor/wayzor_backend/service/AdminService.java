@@ -27,4 +27,10 @@ public class AdminService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public List<UserSummaryDto> getAllHosts() {
+        return userRepository.findByRole("HOST").stream()
+                .map(user -> new UserSummaryDto(user.getId(), user.getName(), user.getEmail(), user.getRole()))
+                .toList();
+    }
 }

@@ -19,4 +19,10 @@ public class AdminController {
     public ResponseEntity<List<UserSummaryDto>> getAllUsers() {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
+
+    @GetMapping("/hosts")
+    public ResponseEntity<List<UserSummaryDto>> getAllHosts() {
+        return ResponseEntity.ok(adminService.getAllHosts());
+    }
+
 }
