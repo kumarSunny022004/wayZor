@@ -59,4 +59,11 @@ public class AdminService {
         touristPackageRepository.delete(touristPackage);
     }
 
+    public void deleteUserById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ApiException("User not found with ID: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+
 }

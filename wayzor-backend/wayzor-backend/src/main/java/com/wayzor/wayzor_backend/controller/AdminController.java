@@ -5,6 +5,7 @@ import com.wayzor.wayzor_backend.dto.UserSummaryDto;
 import com.wayzor.wayzor_backend.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,13 @@ public class AdminController {
     @DeleteMapping("/packages/{id}")
     public ResponseEntity<Void> deletePackage(@PathVariable Long id) {
         adminService.deletePackage(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        adminService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
 
