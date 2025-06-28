@@ -45,4 +45,11 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserSummaryDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getUserById(id));
+    }
+
 }

@@ -8,6 +8,7 @@ import com.wayzor.wayzor_backend.exception.ApiException;
 import com.wayzor.wayzor_backend.repository.TouristPackageRepository;
 import com.wayzor.wayzor_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminService {
 
     private final UserRepository userRepository;
@@ -65,5 +67,20 @@ public class AdminService {
         }
         userRepository.deleteById(id);
     }
+
+    public UserSummaryDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException("User not found"));
+
+        log.info("Fetched user with id {}", id);
+
+        return new UserSummaryDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
+    }
+
 
 }
