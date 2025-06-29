@@ -1,6 +1,7 @@
 package com.wayzor.wayzor_backend.controller;
 
 import com.wayzor.wayzor_backend.dto.PackageResponse;
+import com.wayzor.wayzor_backend.dto.RoleChangeResponse;
 import com.wayzor.wayzor_backend.dto.UserSummaryDto;
 import com.wayzor.wayzor_backend.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,12 @@ public class AdminController {
     @GetMapping("/users/{id}")
     public ResponseEntity<UserSummaryDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getUserById(id));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/users/{userId}/role")
+    public ResponseEntity<RoleChangeResponse> updateUserRole(@PathVariable Long userId) {
+        return ResponseEntity.ok(adminService.changeUserRole(userId));
     }
 
 }

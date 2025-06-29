@@ -1,6 +1,7 @@
 package com.wayzor.wayzor_backend.service;
 
 import com.wayzor.wayzor_backend.dto.PackageResponse;
+import com.wayzor.wayzor_backend.dto.RoleChangeResponse;
 import com.wayzor.wayzor_backend.dto.UserSummaryDto;
 import com.wayzor.wayzor_backend.entity.TouristPackage;
 import com.wayzor.wayzor_backend.entity.User;
@@ -10,6 +11,7 @@ import com.wayzor.wayzor_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,6 +83,27 @@ public class AdminService {
                 user.getRole()
         );
     }
+
+
+//    CHANGE ROLE
+@Transactional
+public RoleChangeResponse changeUserRole(Long userId) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ApiException("User not found with ID: " + userId));
+
+    String currentRole = user.getRole();
+
+    if (currentRole.equals("ADMIN")) {
+        throw new ApiException("Cannot change role of an ADMIN user");
+    }
+
+    String newRole = currentRole.equals("USER") ? "HOST" : "USER";
+    user.setRole(newRole);
+    userRepository.save(user);
+
+    return new RoleChangeResponse(userId, currentRole, newRole, "Role updated successfully");
+}
+
 
 
 }
