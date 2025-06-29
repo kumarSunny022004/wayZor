@@ -1,5 +1,6 @@
 package com.wayzor.wayzor_backend.controller;
 
+import com.wayzor.wayzor_backend.dto.AdminDashboardStats;
 import com.wayzor.wayzor_backend.dto.PackageResponse;
 import com.wayzor.wayzor_backend.dto.RoleChangeResponse;
 import com.wayzor.wayzor_backend.dto.UserSummaryDto;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
+@PreAuthorize("hasAuthority('ADMIN')")
 @RequiredArgsConstructor
 public class AdminController {
 
@@ -40,23 +42,28 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         adminService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
 
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+
     @GetMapping("/users/{id}")
     public ResponseEntity<UserSummaryDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getUserById(id));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+
     @PutMapping("/users/{userId}/role")
     public ResponseEntity<RoleChangeResponse> updateUserRole(@PathVariable Long userId) {
         return ResponseEntity.ok(adminService.changeUserRole(userId));
+    }
+
+
+    @GetMapping("/dashboard-stats")
+    public ResponseEntity<AdminDashboardStats> getDashboardStats() {
+        return ResponseEntity.ok(adminService.getDashboardStats());
     }
 
 }

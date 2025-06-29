@@ -1,11 +1,13 @@
 package com.wayzor.wayzor_backend.service;
 
+import com.wayzor.wayzor_backend.dto.AdminDashboardStats;
 import com.wayzor.wayzor_backend.dto.PackageResponse;
 import com.wayzor.wayzor_backend.dto.RoleChangeResponse;
 import com.wayzor.wayzor_backend.dto.UserSummaryDto;
 import com.wayzor.wayzor_backend.entity.TouristPackage;
 import com.wayzor.wayzor_backend.entity.User;
 import com.wayzor.wayzor_backend.exception.ApiException;
+import com.wayzor.wayzor_backend.repository.FavoriteDestinationRepository;
 import com.wayzor.wayzor_backend.repository.TouristPackageRepository;
 import com.wayzor.wayzor_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class AdminService {
 
     private final UserRepository userRepository;
     private final TouristPackageRepository touristPackageRepository;
+    private final FavoriteDestinationRepository favoriteDestinationRepository;
 
     public List<UserSummaryDto> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -103,6 +106,16 @@ public RoleChangeResponse changeUserRole(Long userId) {
 
     return new RoleChangeResponse(userId, currentRole, newRole, "Role updated successfully");
 }
+
+
+    public AdminDashboardStats getDashboardStats() {
+        long totalUsers = userRepository.countByRole("USER");
+        long totalHosts = userRepository.countByRole("HOST");
+        long totalPackages = touristPackageRepository.count();
+        long totalFavorites = favoriteDestinationRepository.count();
+
+        return new AdminDashboardStats(totalUsers, totalHosts, totalPackages, totalFavorites);
+    }
 
 
 
