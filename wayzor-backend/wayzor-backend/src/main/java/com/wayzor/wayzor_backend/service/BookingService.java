@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,4 +55,23 @@ public class BookingService {
                 saved.getStatus()
         );
     }
+
+    public List<BookingResponse> getUserBookings(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException("User not found"));
+
+        return bookingRepository.findByUserId(user.getId())
+                .stream()
+                .map(booking -> new BookingResponse(
+                        booking.getId(),
+                        booking.getTouristPackage().getTitle(),
+                        booking.getBookingDate(),
+                        booking.getTravelDate(),
+                        booking.getNumberOfPeople(),
+                        booking.getTotalPrice(),
+                        booking.getStatus()
+                ))
+                .toList();
+    }
+
 }

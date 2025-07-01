@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
@@ -24,4 +26,11 @@ public class BookingController {
         BookingResponse response = bookingService.bookPackage(request, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping
+    public ResponseEntity<List<BookingResponse>> getBookings(@AuthenticationPrincipal UserDetails userDetails) {
+        List<BookingResponse> bookings = bookingService.getUserBookings(userDetails.getUsername());
+        return ResponseEntity.ok(bookings);
+    }
+
 }
