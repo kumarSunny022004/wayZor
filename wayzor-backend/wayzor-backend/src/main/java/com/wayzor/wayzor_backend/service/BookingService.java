@@ -12,6 +12,7 @@ import com.wayzor.wayzor_backend.repository.TouristPackageRepository;
 import com.wayzor.wayzor_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -73,5 +74,26 @@ public class BookingService {
                 ))
                 .toList();
     }
+
+    @Transactional
+    public void cancelBooking(Long bookingId, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException("User not found"));
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ApiException("Booking not found"));
+
+        if (booking.getUser().getId() != user.getId()) {
+            throw new ApiException("You are not authorized to cancel this booking");
+        }
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new ApiException("Booking is already cancelled");
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+    }
+
 
 }
