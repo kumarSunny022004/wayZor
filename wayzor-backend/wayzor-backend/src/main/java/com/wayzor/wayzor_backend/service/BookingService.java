@@ -95,5 +95,25 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
+    public List<BookingResponse> getBookingsForHost(String hostEmail) {
+        User host = userRepository.findByEmail(hostEmail)
+                .orElseThrow(() -> new ApiException("Host not found"));
+
+        List<Booking> bookings = bookingRepository.findByTouristPackage_HostId(host.getId());
+
+        return bookings.stream()
+                .map(booking -> new BookingResponse(
+                        booking.getId(),
+                        booking.getTouristPackage().getTitle(),
+                        booking.getBookingDate(),
+                        booking.getTravelDate(),
+                        booking.getNumberOfPeople(),
+                        booking.getTotalPrice(),
+                        booking.getStatus()
+                ))
+                .toList();
+    }
+
+
 
 }

@@ -6,6 +6,7 @@ import com.wayzor.wayzor_backend.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -40,4 +41,12 @@ public class BookingController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @GetMapping("/host")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<List<BookingResponse>> getBookingsForHost(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        List<BookingResponse> bookings = bookingService.getBookingsForHost(userDetails.getUsername());
+        return ResponseEntity.ok(bookings);
+    }
 }
