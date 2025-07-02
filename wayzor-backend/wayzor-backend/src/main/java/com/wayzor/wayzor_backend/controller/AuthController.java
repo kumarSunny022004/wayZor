@@ -4,6 +4,7 @@ package com.wayzor.wayzor_backend.controller;
 import com.wayzor.wayzor_backend.dto.AuthResponse;
 import com.wayzor.wayzor_backend.dto.LoginRequest;
 import com.wayzor.wayzor_backend.dto.RegisterRequest;
+import com.wayzor.wayzor_backend.dto.UpdateUserRequest;
 import com.wayzor.wayzor_backend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class AuthController {
                 .status(HttpStatus.OK)
                 .body(authResponse);
 
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<AuthResponse> updateUser(@RequestBody UpdateUserRequest request) {
+        System.out.println("Update API called for: " + request.getEmail());
+        return new ResponseEntity<>(authService.updateUser(request), HttpStatus.OK);
     }
 
     @GetMapping("/hello")

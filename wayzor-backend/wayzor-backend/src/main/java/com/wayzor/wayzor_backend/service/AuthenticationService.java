@@ -4,6 +4,7 @@ package com.wayzor.wayzor_backend.service;
 import com.wayzor.wayzor_backend.dto.AuthResponse;
 import com.wayzor.wayzor_backend.dto.LoginRequest;
 import com.wayzor.wayzor_backend.dto.RegisterRequest;
+import com.wayzor.wayzor_backend.dto.UpdateUserRequest;
 import com.wayzor.wayzor_backend.entity.User;
 import com.wayzor.wayzor_backend.enums.Role;
 import com.wayzor.wayzor_backend.exception.CustomException;
@@ -51,6 +52,30 @@ public class AuthenticationService {
 
         userRepository.save(user);
 
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        return new AuthResponse(token);
+    }
+
+    public AuthResponse updateUser(UpdateUserRequest request) {
+        // Fetch user from DB
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException("User not found with email: " + request.getEmail()));
+
+        // Update fields only if provided
+        if (request.getName() != null && !request.getName().isBlank()) {
+            user.setName(request.getName());
+        }
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        if (request.getRole() != null && (request.getRole() == Role.USER || request.getRole() == Role.HOST)) {
+            user.setRole(request.getRole().toString());
+        }
+
+        userRepository.save(user);
         String token = jwtUtil.generateToken(user.getEmail());
 
         return new AuthResponse(token);
