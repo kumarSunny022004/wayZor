@@ -24,6 +24,8 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final TouristPackageRepository packageRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
+
 
     public BookingResponse bookPackage(CreateBookingRequest request, String email) {
         User user = userRepository.findByEmail(email)
@@ -46,6 +48,17 @@ public class BookingService {
 
         Booking saved = bookingRepository.save(booking);
 
+        // Send Emails BEFORE returning
+        String userEmail = user.getEmail();
+        String hostEmail = touristPackage.getHost().getEmail();
+
+        String subject = "WayZor Booking Confirmation";
+        String userBody = "Hi " + user.getName() + ", your booking for '" + touristPackage.getTitle() + "' is confirmed!";
+        String hostBody = "Hi " + touristPackage.getHost().getName() + ", your package '" + touristPackage.getTitle() + "' was just booked.";
+
+        emailService.sendEmail(userEmail, subject, userBody);
+        emailService.sendEmail(hostEmail, subject, hostBody);
+
         return new BookingResponse(
                 saved.getId(),
                 touristPackage.getTitle(),
@@ -56,6 +69,7 @@ public class BookingService {
                 saved.getStatus()
         );
     }
+
 
     public List<BookingResponse> getUserBookings(String email) {
         User user = userRepository.findByEmail(email)
@@ -93,6 +107,9 @@ public class BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+
+
+
     }
 
     public List<BookingResponse> getBookingsForHost(String hostEmail) {
