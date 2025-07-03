@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/packages/city").permitAll()
                         .requestMatchers("/api/favorites/**").authenticated()
                         .requestMatchers("/api/bookings/**").authenticated()
+                        .requestMatchers("/api/trains/**").authenticated()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/packages/**").hasAuthority("HOST")
                         .anyRequest().authenticated()
